@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -17,10 +18,12 @@ import { AppService } from './app.service';
         POSTGRES_DB: Joi.string().required(),
         PORT: Joi.number(),
       }),
+      isGlobal: true,
     }),
     DatabaseModule,
     UsersModule,
     AuthModule,
+    UploadModule,
   ],
   providers: [AppService],
 })
