@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UploadService {
+  constructor(private readonly configService: ConfigService) {}
+  
   private readonly s3Client = new S3Client({
     region: this.configService.getOrThrow('AWS_REGION'),
     credentials: {
@@ -12,17 +14,26 @@ export class UploadService {
     },
   });
 
-  constructor(private readonly configService: ConfigService) {}
-
-  async upload(fileName: string, file: Buffer) {
+  async upload(user_id: string, fileName: string, file: Buffer) {
+    console.log(user_id, fileName, file);
     const uploadResponse = await this.s3Client.send(
       new PutObjectCommand({
         Bucket: 'nestjs-uploader-indicloud',
-        Key: `${fileName}`,
+        Key: `${user_id}/${fileName}`,
         Body: file,
+        ACL: 'public-read',
       }),
     );
-    console.log(uploadResponse);
-    return uploadResponse;
   }
+
+  // async download(fileName: string, file: Buffer) {
+  //   const downloadResponse = await this.s3Client.send(
+  //     new PutObjectCommand({
+  //       Bucket: 'nestjs-uploader-indicloud',
+  //       Key: `${fileName}`,
+  //       Body: file,
+  //     }),
+  //   );
+  //   return downloadResponse;
+  // }
 }

@@ -10,7 +10,6 @@ import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-  
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -29,10 +28,13 @@ export class AuthService {
     });
 
     await this.usersRepository.save(user);
-
     const token = this.jwtService.sign({ id: user.id });
 
-    return { token };
+    const { password: _, ...userWithoutPassword } = user;
+    return { token, user: userWithoutPassword } as {
+      token: string;
+      user: User;
+    };
   }
 
   async login(loginDto: LoginDto): Promise<{ token: string }> {
@@ -54,6 +56,10 @@ export class AuthService {
 
     const token = this.jwtService.sign({ id: user.id });
 
-    return { token };
+    const { password: _, ...userWithoutPassword } = user;
+    return { token, user: userWithoutPassword } as {
+      token: string;
+      user: User;
+    };
   }
 }

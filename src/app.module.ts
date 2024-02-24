@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
 import { UploadModule } from './upload/upload.module';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -25,6 +27,11 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
     UploadModule,
   ],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },],
 })
 export class AppModule {}
