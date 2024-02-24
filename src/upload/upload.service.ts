@@ -15,12 +15,14 @@ export class UploadService {
   constructor(private readonly configService: ConfigService) {}
 
   async upload(fileName: string, file: Buffer) {
-    await this.s3Client.send(
+    const uploadResponse = await this.s3Client.send(
       new PutObjectCommand({
         Bucket: 'nestjs-uploader-indicloud',
-        Key: fileName,
+        Key: `${fileName}`,
         Body: file,
       }),
     );
+    console.log(uploadResponse);
+    return uploadResponse;
   }
 }
