@@ -17,6 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 @Controller('action')
 export class UploadController {
@@ -50,11 +51,12 @@ export class UploadController {
     console.log('\x1b[33mReaching download controller\x1b[0m\n=========================================');
     console.log('user_id:', user_id);
     console.log('fileName:', fileName);
-    const file = await this.uploadService.download(user_id, fileName);
+    
+    const file: Readable = await this.uploadService.download(user_id, fileName);
     console.log('file:', file);
-    res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-    res.setHeader('Content-Type', 'application/octet-stream');
-      
+    return new StreamableFile(file, {
+      type: 'application/octet-stream',
+    })
   }
 
   @Get('files')

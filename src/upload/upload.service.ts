@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  ListObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
 
 @Injectable()
 export class UploadService {
   constructor(private readonly configService: ConfigService) {}
-  
+
   private readonly s3Client = new S3Client({
     region: this.configService.getOrThrow('AWS_REGION'),
     credentials: {
@@ -36,14 +42,24 @@ export class UploadService {
     return listObjects.Contents;
   }
 
-  async download(user_id: string, fileName: string) {
+  async download(user_id: string, fileName: string): Promise<Readable> {
     const downloadResponse = await this.s3Client.send(
       new GetObjectCommand({
         Bucket: 'nestjs-uploader-indicloud',
         Key: `${user_id}/${fileName}`,
       }),
     );
-    return downloadResponse.Body;
+    try {
+      const downloadResponse = await this.s3Client.send(
+        new GetObjectCommand({
+          Bucket: 'nestjs-uploader-indicloud',
+          Key: `${user_id}/${fileName}`,
+        }),
+      );
+      return downloadResponse.Body as Readable;
+    } catch (error) {
+      throw new Error('File not found');
+    }
   }
 
   async delete(user_id: string, fileName: string) {
@@ -53,6 +69,5 @@ export class UploadService {
         Key: `${user_id}/${fileName}`,
       }),
     );
-    
   }
 }
