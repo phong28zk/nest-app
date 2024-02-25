@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
+import { Readable } from 'stream';
 
 @Injectable()
 export class UploadService {
@@ -14,26 +15,35 @@ export class UploadService {
     },
   });
 
-  async upload(user_id: string, fileName: string, file: Buffer) {
-    console.log(user_id, fileName, file);
+  async upload(user_id: string, fileName: string, file: Buffer): Promise<void> {
     const uploadResponse = await this.s3Client.send(
       new PutObjectCommand({
         Bucket: 'nestjs-uploader-indicloud',
         Key: `${user_id}/${fileName}`,
         Body: file,
-        ACL: 'public-read',
+        ACL: 'bucket-owner-full-control',
       }),
     );
   }
 
-  // async download(fileName: string, file: Buffer) {
-  //   const downloadResponse = await this.s3Client.send(
-  //     new PutObjectCommand({
-  //       Bucket: 'nestjs-uploader-indicloud',
-  //       Key: `${fileName}`,
-  //       Body: file,
-  //     }),
-  //   );
-  //   return downloadResponse;
-  // }
+  async getFileOfUser(user_id: string) {
+    const listObjects = await this.s3Client.send(
+      new ListObjectsCommand({
+        Bucket: 'nestjs-uploader-indicloud',
+        Prefix: `${user_id}/`,
+      }),
+    );
+    return listObjects.Contents;
+  }
+
+  async download(user_id: string, fileName: string) {
+    const downloadResponse = await this.s3Client.send(
+      new GetObjectCommand({
+        Bucket: 'nestjs-uploader-indicloud',
+        Key: `${user_id}/${fileName}`,
+      }),
+    );
+
+    return downloadResponse.Body;
+  }
 }
