@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
 
@@ -43,7 +43,16 @@ export class UploadService {
         Key: `${user_id}/${fileName}`,
       }),
     );
-
     return downloadResponse.Body;
+  }
+
+  async delete(user_id: string, fileName: string) {
+    const deleteResponse = await this.s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: 'nestjs-uploader-indicloud',
+        Key: `${user_id}/${fileName}`,
+      }),
+    );
+    
   }
 }
