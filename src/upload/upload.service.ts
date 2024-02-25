@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   ListObjectsCommand,
   PutObjectCommand,
+  S3,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
@@ -42,13 +43,7 @@ export class UploadService {
     return listObjects.Contents;
   }
 
-  async download(user_id: string, fileName: string): Promise<Readable> {
-    const downloadResponse = await this.s3Client.send(
-      new GetObjectCommand({
-        Bucket: 'nestjs-uploader-indicloud',
-        Key: `${user_id}/${fileName}`,
-      }),
-    );
+  async download(user_id: string, fileName: string) {
     try {
       const downloadResponse = await this.s3Client.send(
         new GetObjectCommand({
@@ -56,7 +51,9 @@ export class UploadService {
           Key: `${user_id}/${fileName}`,
         }),
       );
-      return downloadResponse.Body as Readable;
+      const str = await downloadResponse.Body.transformToString();
+      // console.log(str);
+      return str;
     } catch (error) {
       throw new Error('File not found');
     }

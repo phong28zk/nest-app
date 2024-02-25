@@ -52,11 +52,9 @@ export class UploadController {
     console.log('user_id:', user_id);
     console.log('fileName:', fileName);
     
-    const file: Readable = await this.uploadService.download(user_id, fileName);
+    const file = await this.uploadService.download(user_id, fileName);
     console.log('file:', file);
-    return new StreamableFile(file, {
-      type: 'application/octet-stream',
-    })
+    
   }
 
   @Get('files')
@@ -76,5 +74,4 @@ export class UploadController {
     await this.uploadService.delete(user_id, fileName);
   }
 
-  
 }
