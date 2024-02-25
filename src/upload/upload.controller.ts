@@ -5,15 +5,17 @@ import {
   ParseFilePipe,
   Post,
   Req,
+  Request,
   Res,
-  StreamableFile,
   UploadedFile,
+  StreamableFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { JwtGuard } from 'src/auth/jwt.guard';
+import { createReadStream } from 'fs';
 
 @Controller('action')
 export class UploadController {
@@ -40,6 +42,18 @@ export class UploadController {
     await this.uploadService.upload(user_id, file.originalname, file.buffer);
   }
 
+  @Get('download/:fileName')
+  @UseGuards(JwtGuard)
+  async downloadFile(@Req() req, @Param('fileName') fileName: string, @Res() res){
+    const user_id = req.user['id'];
+    console.log('\x1b[33mReaching download controller\x1b[0m\n=========================================');
+    console.log('user_id:', user_id);
+    console.log('fileName:', fileName);
+    const file = await this.uploadService.download(user_id, fileName);
+    console.log('file:', file);
+    
+  }
+
   @Get('files')
   @UseGuards(JwtGuard)
   async getFiles(@Req() req) {
@@ -47,13 +61,5 @@ export class UploadController {
     return this.uploadService.getFileOfUser(user_id);
   }
 
-  @Get('download/:fileName')
-  @UseGuards(JwtGuard)
-  async downloadFile(@Req() req, @Param('fileName') fileName: string, @Res() res: Response) {
-    const username = req.user.username;
-    const fileStream = await this.uploadService.download(username, fileName);
-
-    // Pipe the file stream to the response
-    fileStream.pipe(res);
-  }
+  
 }
