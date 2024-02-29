@@ -56,7 +56,7 @@ export class UploadController {
     const downloadPath = `./${fileName}`;
     const writeStream = createWriteStream(downloadPath);
     file.pipe(writeStream);
-    writeStream.on('end', () => {
+    writeStream.on('finish', () => {
       console.log('Download completed');
       res.download(downloadPath, fileName, (err) => {
         if (err) {
