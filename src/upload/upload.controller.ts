@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { JwtGuard } from 'src/auth/jwt.guard';
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 import { Readable } from 'stream';
 
 @Controller('action')
@@ -53,8 +53,20 @@ export class UploadController {
     console.log('fileName:', fileName);
     
     const file = await this.uploadService.download(user_id, fileName);
-    console.log('file:', file);
-    
+    const downloadPath = `./${fileName}`;
+    const writeStream = createWriteStream(downloadPath);
+    file.pipe(writeStream);
+    writeStream.on('end', () => {
+      console.log('Download completed');
+      res.download(downloadPath, fileName, (err) => {
+        if (err) {
+          console.log('Error:', err);
+        } else {
+          console.log('File sent');
+        }
+      });
+    });
+
   }
 
   @Get('files')

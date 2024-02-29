@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  GetObjectCommandOutput,
   ListObjectsCommand,
   PutObjectCommand,
   S3,
@@ -51,9 +52,25 @@ export class UploadService {
           Key: `${user_id}/${fileName}`,
         }),
       );
-      const str = await downloadResponse.Body.transformToString();
-      // console.log(str);
-      return str;
+      console.log(typeof downloadResponse.Body)
+      // return downloadResponse.Body;
+      const asStream = downloadResponse.Body as Readable;
+      return asStream;
+      // const asBuffer = async (response: GetObjectCommandOutput) => {
+      //   const stream = asStream;
+      //   const chunks: Buffer[] = [];
+      //   return new Promise<Buffer>((resolve, reject) => {
+      //     stream.on('data', (chunk) => chunks.push(chunk));
+      //     stream.on('error', (error) => reject(error));
+      //     stream.on('end', () => resolve(Buffer.concat(chunks)));
+      //   });
+      // };
+      // const asString = async (response: GetObjectCommandOutput) => {
+      //   const buffer = await asBuffer(response);
+      //   return buffer?.toString('utf-8');
+      // };
+      // return asString(downloadResponse);
+
     } catch (error) {
       throw new Error('File not found');
     }
