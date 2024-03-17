@@ -18,6 +18,8 @@ import { UploadService } from './upload.service';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { createReadStream, createWriteStream } from 'fs';
 import { Readable } from 'stream';
+import * as os from 'os';
+import * as path from 'path';
 
 @Controller('action')
 export class UploadController {
@@ -53,16 +55,16 @@ export class UploadController {
     console.log('fileName:', fileName);
     
     const file = await this.uploadService.download(user_id, fileName);
-    const downloadPath = `./${fileName}`;
-    const writeStream = createWriteStream(downloadPath);
+    const downloadPath2 = path.join(os.homedir(), 'Downloads', fileName);
+    const writeStream = createWriteStream(downloadPath2);
     file.pipe(writeStream);
     writeStream.on('finish', () => {
       console.log('Download completed');
-      res.download(downloadPath, fileName, (err) => {
+      res.download(downloadPath2, fileName, (err) => {
         if (err) {
           console.log('Error:', err);
         } else {
-          console.log('File sent');
+          console.log('File sent to: ' + downloadPath2);
         }
       });
     });
