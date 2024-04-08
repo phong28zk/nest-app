@@ -32,7 +32,9 @@ export class UploadService {
         ACL: 'bucket-owner-full-control',
       }),
     );
+    
   }
+
 
   async getFileOfUser(user_id: string) {
     const listObjects = await this.s3Client.send(
@@ -56,20 +58,6 @@ export class UploadService {
       // return downloadResponse.Body;
       const asStream = downloadResponse.Body as Readable;
       return asStream;
-      // const asBuffer = async (response: GetObjectCommandOutput) => {
-      //   const stream = asStream;
-      //   const chunks: Buffer[] = [];
-      //   return new Promise<Buffer>((resolve, reject) => {
-      //     stream.on('data', (chunk) => chunks.push(chunk));
-      //     stream.on('error', (error) => reject(error));
-      //     stream.on('end', () => resolve(Buffer.concat(chunks)));
-      //   });
-      // };
-      // const asString = async (response: GetObjectCommandOutput) => {
-      //   const buffer = await asBuffer(response);
-      //   return buffer?.toString('utf-8');
-      // };
-      // return asString(downloadResponse);
 
     } catch (error) {
       throw new Error('File not found');
