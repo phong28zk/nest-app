@@ -20,6 +20,7 @@ import { createReadStream, createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs';
 
 @Controller('action')
 export class UploadController {
@@ -55,18 +56,29 @@ export class UploadController {
     console.log('fileName:', fileName);
     
     const file = await this.uploadService.download(user_id, fileName);
-    const downloadPath2 = path.join(os.homedir(), 'Downloads', fileName);
-    const writeStream = createWriteStream(downloadPath2);
+    // const downloadPath = path.join(os.homedir(), 'Downloads', fileName);
+    const downloadPath = path.join(__dirname, '..', 'downloads', fileName);
+
+    const writeStream = createWriteStream(downloadPath);
     file.pipe(writeStream);
+    // writeStream.on('finish', () => {
+    //   console.log('Download completed');
+    //   res.download(downloadPath, fileName, (err) => {
+    //     if (err) {
+    //       console.log('Error:', err);
+    //     } else {
+    //       console.log('File sent to: ' + downloadPath);
+    //     }
+    //   });
+    // });
+
     writeStream.on('finish', () => {
-      console.log('Download completed');
-      res.download(downloadPath2, fileName, (err) => {
-        if (err) {
-          console.log('Error:', err);
-        } else {
-          console.log('File sent to: ' + downloadPath2);
-        }
-      });
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+      res.setHeader('Content-Length', fs.statSync(downloadPath).size);
+
+      const readStream = fs.createReadStream(downloadPath);
+      readStream.pipe(res);
     });
 
   }
