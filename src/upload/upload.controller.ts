@@ -56,30 +56,30 @@ export class UploadController {
     console.log('fileName:', fileName);
     
     const file = await this.uploadService.download(user_id, fileName);
-    // const downloadPath = path.join(os.homedir(), 'Downloads', fileName);
-    const downloadPath = path.join(__dirname, '..', 'downloads', fileName);
+    const downloadPath = path.join(os.homedir(), 'Downloads', fileName);
+    // const downloadPath = path.join(__dirname, '..', 'downloads', fileName);
 
     const writeStream = createWriteStream(downloadPath);
     file.pipe(writeStream);
-    // writeStream.on('finish', () => {
-    //   console.log('Download completed');
-    //   res.download(downloadPath, fileName, (err) => {
-    //     if (err) {
-    //       console.log('Error:', err);
-    //     } else {
-    //       console.log('File sent to: ' + downloadPath);
-    //     }
-    //   });
-    // });
-
     writeStream.on('finish', () => {
-      res.setHeader('Content-Type', 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-      res.setHeader('Content-Length', fs.statSync(downloadPath).size);
-
-      const readStream = fs.createReadStream(downloadPath);
-      readStream.pipe(res);
+      console.log('Download completed');
+      res.download(downloadPath, fileName, (err) => {
+        if (err) {
+          console.log('Error:', err);
+        } else {
+          console.log('File sent to: ' + downloadPath);
+        }
+      });
     });
+
+    // writeStream.on('finish', () => {
+    //   res.setHeader('Content-Type', 'application/octet-stream');
+    //   res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+    //   res.setHeader('Content-Length', fs.statSync(downloadPath).size);
+
+    //   const readStream = fs.createReadStream(downloadPath);
+    //   readStream.pipe(res);
+    // });
 
   }
 
