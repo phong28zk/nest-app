@@ -15,7 +15,7 @@ services:
       - nestjs_network
   nestjs:
     container_name: nestjs_container
-    image: nest-app
+    dockerfile: Dockerfile
     environment:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
