@@ -57,7 +57,7 @@ export class UploadController {
     
     const file = await this.uploadService.download(user_id, fileName);
     // const downloadPath = path.join(os.homedir(), 'Downloads', fileName);
-    const downloadPath = path.join(__dirname, '..', 'public', fileName);
+    const downloadPath = path.join(os.tmpdir(), fileName);
 
     const writeStream = createWriteStream(downloadPath);
     file.pipe(writeStream);

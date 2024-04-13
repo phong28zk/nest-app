@@ -13,19 +13,19 @@ services:
     restart: unless-stopped
     networks:
       - nestjs_network
-  nestjs:
-    container_name: nestjs_container
-    image: nest-app
-    environment:
-      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_REGION: ${AWS_REGION}
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    networks:
-      - nestjs_network
+  # nestjs:
+  #   container_name: nestjs_container
+  #   image: nest-app
+  #   environment:
+  #     AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  #     AWS_REGION: ${AWS_REGION}
+  #     AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+  #   ports:
+  #     - "3000:3000"
+  #   restart: unless-stopped
+  #   networks:
+  #     - nestjs_network
 
 networks:
     nestjs_network:
