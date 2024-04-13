@@ -28,6 +28,8 @@ services:
     restart: unless-stopped
     networks:
       - nestjs_network
+    depends_on:
+      - postgres
 
 networks:
     nestjs_network:
