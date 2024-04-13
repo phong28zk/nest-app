@@ -25,7 +25,7 @@ services:
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
     ports:
       - "3000:3000"
-    restart: unless-stopped
+    restart: always
     networks:
       - nestjs_network
     depends_on:
